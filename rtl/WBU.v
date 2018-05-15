@@ -40,7 +40,7 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 
 	always @(posedge clk_i) begin
 		if (rst_i) begin
-			
+
 		end else begin
 			if(wbm_we_i) begin
 				if(!wbs_cyc_o && !wbs_stb_o) begin
@@ -61,10 +61,11 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 					wbs_sel_o.next <= wbm_sel_i;
 					wbs_cyc_o.next <= 1;
 					wbs_stb_o.next <= 1;
-				end else if(wbs_ack_i) begin
-					wbm_dat_o.next <= wbs_dat_i;
-					wbs_cyc_o.next <= 0;
+				end else if(wbs_ack_i && wbs_stb_o) begin
 					wbs_stb_o.next <= 0;
+				end else if(wbs_ack_i && !wbs_stb_o) begin
+					wbs_cyc_o.next <= 0;
+					wbs_dat_o.next <= wbm_dat_i;
 				end
 			end
 
