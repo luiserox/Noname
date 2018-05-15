@@ -43,7 +43,10 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 
 		end else begin
 			if(wbm_we_i) begin
-				if(!wbs_cyc_o && !wbs_stb_o) begin
+				if(wbs_err_i) begin
+					wbm_err_o.next <= wbs_err_i;
+				end else if(!wbs_cyc_o && !wbs_stb_o) begin
+					wbm_err_o.next <= wbs_err_i;
 					wbs_addr_o.next <= wbm_addr_i;
 					wbs_dat_o.next <= wbm_dat_i;
 					wbs_we_o.next <= wbm_we_i;
@@ -55,7 +58,10 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 					wbs_stb_o.next <= 0;
 				end
 			end else begin
-				if(!wbs_cyc_o && !wbs_stb_o) begin
+				if(wbs_err_i) begin
+					wbm_err_o.next <= wbs_err_i;
+				end else if(!wbs_cyc_o && !wbs_stb_o) begin
+					wbm_err_o.next <= wbs_err_i;
 					wbs_addr_o.next <= wbm_addr_i;
 					wbs_we_o.next <= 0;
 					wbs_sel_o.next <= wbm_sel_i;
