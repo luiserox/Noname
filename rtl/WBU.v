@@ -4,7 +4,7 @@
 * Luis Ruiz
 */
 
-module WBU(clk_i, rst_i, wbm_dat_i, wbm_addr_i, wbm_sel_i, wbm_we_i, wbm_ack_o, wbm_dat_o, wbm_err_o,  
+module WBU(clk_i, rst_i, wbm_dat_i, wbm_addr_i, wbm_sel_i, wbm_we_i, wbm_re_i, wbm_ack_o, wbm_dat_o, wbm_err_o,  
 wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wbs_we_o, wbs_sel_o);
 
 	input wire clk_i;
@@ -15,6 +15,7 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 	input wire [31:0] wbm_addr_i;
 	input wire [3:0] wbm_sel_i;
 	input wire wbm_we_i;
+	input wire wbm_re_i;
 	output reg wbm_ack_o;
 	output reg [31:0] wbm_dat_o;
 	output reg wbm_err_o;
@@ -57,7 +58,7 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 					wbs_cyc_o <= 0;
 					wbs_stb_o <= 0;
 				end
-			end else begin
+			end else if(wbm_re_i) begin
 				if(wbs_err_i) begin
 					wbm_err_o <= wbs_err_i;
 				end else if(!wbs_cyc_o && !wbs_stb_o) begin
@@ -79,4 +80,3 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 
 	end
 endmodule
-
