@@ -46,37 +46,37 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 				if(wbs_err_i) begin
 					wbm_err_o.next <= wbs_err_i;
 				end else if(!wbs_cyc_o && !wbs_stb_o) begin
-					wbm_err_o.next <= wbs_err_i;
-					wbs_addr_o.next <= wbm_addr_i;
-					wbs_dat_o.next <= wbm_dat_i;
-					wbs_we_o.next <= wbm_we_i;
-					wbs_sel_o.next <= wbm_sel_i;
-					wbs_cyc_o.next <= 1;
-					wbs_stb_o.next <= 1;
+					wbm_err_o <= wbs_err_i;
+					wbs_addr_o <= wbm_addr_i;
+					wbs_dat_o <= wbm_dat_i;
+					wbs_we_o <= wbm_we_i;
+					wbs_sel_o <= wbm_sel_i;
+					wbs_cyc_o <= 1;
+					wbs_stb_o <= 1;
 				end else if(wbs_ack_i) begin
-					wbs_cyc_o.next <= 0;
-					wbs_stb_o.next <= 0;
+					wbs_cyc_o <= 0;
+					wbs_stb_o <= 0;
 				end
 			end else begin
 				if(wbs_err_i) begin
-					wbm_err_o.next <= wbs_err_i;
+					wbm_err_o <= wbs_err_i;
 				end else if(!wbs_cyc_o && !wbs_stb_o) begin
-					wbm_err_o.next <= wbs_err_i;
-					wbs_addr_o.next <= wbm_addr_i;
-					wbs_we_o.next <= 0;
-					wbs_sel_o.next <= wbm_sel_i;
-					wbs_cyc_o.next <= 1;
-					wbs_stb_o.next <= 1;
+					wbm_err_o <= wbs_err_i;
+					wbs_addr_o <= wbm_addr_i;
+					wbs_we_o <= 0;
+					wbs_sel_o <= wbm_sel_i;
+					wbs_cyc_o <= 1;
+					wbs_stb_o <= 1;
 				end else if(wbs_ack_i && wbs_stb_o) begin
-					wbs_stb_o.next <= 0;
+					wbs_stb_o <= 0;
 				end else if(wbs_ack_i && !wbs_stb_o) begin
-					wbs_cyc_o.next <= 0;
-					wbs_dat_o.next <= wbm_dat_i;
+					wbs_cyc_o <= 0;
+					wbs_dat_o <= wbm_dat_i;
 				end
 			end
 
 		end
 
 	end
-
+endmodule
 
