@@ -45,7 +45,7 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 		end else begin
 			if(wbm_we_i) begin
 				if(wbs_err_i) begin
-					wbm_err_o.next <= wbs_err_i;
+					wbm_err_o <= wbs_err_i;
 				end else if(!wbs_cyc_o && !wbs_stb_o) begin
 					wbm_err_o <= wbs_err_i;
 					wbs_addr_o <= wbm_addr_i;
