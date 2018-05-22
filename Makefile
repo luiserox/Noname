@@ -14,7 +14,11 @@ BUILD_DIR = build
 #--------------------------------------------------------------------
 # Sources
 #--------------------------------------------------------------------
-OBJS = $(patsubst $(SRC_DIR)/%.v,%, $(wildcard $(SRC_DIR)/*.v))
+objs_basename = $(basename $(notdir $(wildcard $(SRC_DIR)/*.v)))
+objs_no_test  = $(patsubst %_tb.cpp, %, $(notdir $(filter-out $(objs_basename), $(wildcard $(TESTS_DIR)/*_tb.cpp))))
+objs_verilate = $(addsuffix .verilate, $(objs_basename))
+objs_compile  = $(addprefix V, $(addsuffix .compile, $(objs_no_test)))
+objs_run  	  = $(addprefix V, $(addsuffix .run, $(objs_no_test)))
 
 #--------------------------------------------------------------------
 # Build Rules
@@ -22,43 +26,33 @@ OBJS = $(patsubst $(SRC_DIR)/%.v,%, $(wildcard $(SRC_DIR)/*.v))
 VERILATOR_CFLAGS = -CFLAGS "-std=c++11 -O3"
 VERILATOR_OPTS = --Mdir $(OBJ_DIR) -Wno-lint --trace --exe 
 
-
-define _compile_1
-
-@verilator -Wall $(VERILATOR_CFLAGS) $(VERILATOR_OPTS) --cc $(patsubst %,$(SRC_DIR)/%.v, $(1)) $(patsubst %,$(TESTS_DIR)/%_tb.cpp, $(1))
-endef
-
-
-define _compile_2
-	
-@make -C $(OBJ_DIR) -j -f $(patsubst %,V%.mk, $(1)) $(patsubst %,V%, $(1))
-endef
-
-
-define _run
-
-@$(OBJ_DIR)/$(patsubst %,V%, $(1)) | head
-endef
-
 #--------------------------------------------------------------------
 # Default
 #--------------------------------------------------------------------
-default: |run
+default: run
 
 #--------------------------------------------------------------------
-# Build and run Testbenchs
+# Build, compile and run Testbenchs
 #--------------------------------------------------------------------
-.pre-compile:
-	$(foreach objs, $(OBJS), $(call _compile_1, $(objs)))
+verilate: $(objs_verilate)
 
-compile: .pre-compile
-	$(foreach objs, $(OBJS), $(call _compile_2, $(objs)))
+compile: verilate $(objs_compile)
 
-run: compile
-	$(foreach objs, $(OBJS), $(call _run, $(objs)))
+run: compile $(objs_run)
+
+#--------------------------------------------------------------------
+
+$(objs_verilate): %.verilate: $(SRC_DIR)/%.v
+	@verilator -Wall $(VERILATOR_CFLAGS) $(VERILATOR_OPTS) --cc $< $(patsubst %.verilate, $(TESTS_DIR)/%_tb.cpp, $@)
+
+$(objs_compile): %.compile: $(OBJ_DIR)/%.mk
+	@make -C $(OBJ_DIR) -j -f $(patsubst %.compile, %.mk, $@) $(patsubst %.compile, %, $@)
+
+$(objs_run): %.run: $(OBJ_DIR)/%.exe
+	@$< | head
 
 #--------------------------------------------------------------------
 # Clean
 #--------------------------------------------------------------------
 clean:
-	@rm -r $(OBJ_DIR) *.vcd
+	@rm -rf $(OBJ_DIR) *.vcd
