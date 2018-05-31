@@ -4,11 +4,11 @@
 * Luis Ruiz
 */
 
-module LSUcomb(rst_i, mem_dat_i, mem_addr_i, mem_we_i, mem_re_i, mem_type_i, mem_sign_i, mem_err_o, mem_dat_o, 
+module LSUcomb(clk_i, rst_i, mem_dat_i, mem_addr_i, mem_we_i, mem_re_i, mem_type_i, mem_sign_i, mem_err_o, mem_dat_o, 
 	lsu_dat_i, lsu_sel_o, lsu_addr_o, lsu_dat_o, lsu_we_o, lsu_re_o);
 
-	input wire clk_i;
 	input wire rst_i;
+	input wire clk_i;
 
 
 	input wire [31:0] mem_dat_i;
