@@ -4,8 +4,8 @@
 * Luis Ruiz
 */
 
-module WBU(clk_i, rst_i, wbm_dat_i, wbm_addr_i, wbm_sel_i, wbm_we_i, wbm_re_i, wbm_kill_i, wbm_cyc_o, wbm_dat_o, wbm_err_o,  
-wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wbs_we_o, wbs_sel_o);
+module WBU(clk_i, rst_i, wbm_we_i, wbm_re_i, wbm_kill_i, wbm_cyc_o,  
+wbs_ack_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 
 	input wire clk_i;
 	input wire rst_i;
@@ -18,35 +18,20 @@ wbs_dat_i, wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_dat_o, wbs_addr_o, wb
 	reg [2:0] wbu_state;
 
 	//Comunicacion con pipeline
-	input wire [31:0] wbm_dat_i;
-	input wire [31:0] wbm_addr_i;
-	input wire [3:0] wbm_sel_i;
 	input wire wbm_we_i;
 	input wire wbm_re_i;
 	input wire wbm_kill_i;
 	output reg wbm_cyc_o;
-	output reg [31:0] wbm_dat_o;
-	output reg wbm_err_o;
 
 	//Comunicacion con memoria
-	input wire [31:0] wbs_dat_i;
 	input wire wbs_ack_i;
-	input wire wbs_err_i;
 	output reg wbs_cyc_o;
 	output reg wbs_stb_o;
-	output reg [31:0] wbs_dat_o;
-	output reg [31:0] wbs_addr_o;
 	output reg wbs_we_o;
-	output reg [3:0] wbs_sel_o;
 
 	//Buffer de entradas y salidas
 	always @(*) begin
 		wbs_we_o = wbm_we_i;
-		wbs_sel_o = wbm_sel_i;
-		wbs_addr_o = wbm_addr_i;
-		wbs_dat_o = wbm_dat_i;
-		wbm_dat_o = wbs_dat_i;
-		wbm_err_o = wbs_err_i;
 		wbm_cyc_o = wbs_cyc_o;
 	end
 
