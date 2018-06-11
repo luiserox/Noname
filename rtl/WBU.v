@@ -4,27 +4,29 @@
 * Luis Ruiz
 */
 
-module WBU(clk_i, rst_i, wbm_we_i, wbm_re_i, wbm_kill_i, wbm_cyc_o,  
-wbs_ack_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
+module WBU(clk_i, rst_i, wbm_we_i, wbm_re_i, wbm_kill_i, wbm_ack_o, wbm_err_o,  
+wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 
 	input wire clk_i;
 	input wire rst_i;
 
 	//Maquina de estados
-	localparam wbu_state_idle = 3'b001;
-	localparam wbu_state_tran = 3'b010;
-	localparam wbu_state_endtran = 3'b100;
+	localparam wbu_state_idle = 2'b01;
+	localparam wbu_state_tran = 2'b10;
 
-	reg [2:0] wbu_state;
+
+	reg [1:0] wbu_state;
 
 	//Comunicacion con pipeline
 	input wire wbm_we_i;
 	input wire wbm_re_i;
 	input wire wbm_kill_i;
-	output reg wbm_cyc_o;
+	output reg wbm_ack_o;
+	output reg wbm_err_o;
 
 	//Comunicacion con memoria
 	input wire wbs_ack_i;
+	input wire wbs_err_i;
 	output reg wbs_cyc_o;
 	output reg wbs_stb_o;
 	output reg wbs_we_o;
@@ -32,7 +34,8 @@ wbs_ack_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 	//Buffer de entradas y salidas
 	always @(*) begin
 		wbs_we_o = wbm_we_i;
-		wbm_cyc_o = wbs_cyc_o;
+		wbm_err_o = wbs_err_i;
+		wbm_ack_o = wbs_ack_i;
 	end
 
 	always @(posedge clk_i) begin
@@ -54,13 +57,10 @@ wbs_ack_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 						wbs_cyc_o <= 1;
 						wbs_stb_o <= 1;
 						if(wbs_ack_i || wbs_err_i) begin
-							wbu_state <= wbu_state_endtran;
+							wbs_cyc_o <= 0;
+							wbs_stb_o <= 0;
+							wbu_state <= wbu_state_idle;
 						end
-				end
-				wbu_state_endtran: begin
-					wbs_cyc_o <= 0;
-					wbs_stb_o <= 0;
-					wbu_state <= wbu_state_idle;
 				end
 				default:begin
 					wbu_state <= wbu_state_idle;
