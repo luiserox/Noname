@@ -74,6 +74,13 @@ module mem(input wire clk_i,
   wire mem_we;
   wire mem_re;
 
+  always@(*) begin
+    mem_pc_o = mem_pc_i;
+    mem_pc4_o = mem_pc4_i;
+    mem_alu_o = mem_alu_i;
+    mem_rd_o = mem_rd_i;
+  end
+
   LSUcomb lsucomb(.clk_i(clk_i), .rst_i(rst_i),.mem_dat_i(mem_rsc2_i), .mem_addr_i(mem_alu_i), 
   .mem_we_i(mem_we_i), .mem_re_i(mem_re_i), .mem_type_i(mem_type_i), .mem_sign_i(mem_sign_i), .mem_err_o(addrmiss_err), .mem_dat_o(mem_out_o), 
   .lsu_dat_i(wbs_dat_i), .lsu_sel_o(wbs_sel_o), .lsu_addr_o(wbs_addr_o), .lsu_dat_o(wbs_dat_o), .lsu_we_o(mem_we), .lsu_re_o(mem_re));
