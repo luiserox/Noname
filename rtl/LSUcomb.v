@@ -4,7 +4,7 @@
 * Luis Ruiz
 */
 
-module LSUcomb(clk_i, rst_i, mem_dat_i, mem_addr_i, mem_we_i, mem_re_i, mem_type_i, mem_sign_i, mem_err_o, mem_dat_o, 
+module LSUcomb(clk_i, rst_i, mem_dat_i, mem_addr_i, mem_we_mem_i, mem_is_mem_i, mem_funct3, mem_err_o, mem_dat_o, 
 	lsu_dat_i, lsu_sel_o, lsu_addr_o, lsu_dat_o, lsu_we_o, lsu_re_o);
 
 	input wire rst_i;
@@ -13,10 +13,9 @@ module LSUcomb(clk_i, rst_i, mem_dat_i, mem_addr_i, mem_we_i, mem_re_i, mem_type
 
 	input wire [31:0] mem_dat_i;
 	input wire [31:0] mem_addr_i;
-	input wire mem_we_i;
-	input wire mem_re_i;
-	input wire [1:0] mem_type_i;
-	input wire mem_sign_i;
+	input wire mem_we_mem_i;
+	input wire mem_is_mem_i;
+	input wire [2:0] mem_funct3;
 	input wire [31:0] lsu_dat_i;
 
 	output reg mem_err_o;
@@ -27,9 +26,17 @@ module LSUcomb(clk_i, rst_i, mem_dat_i, mem_addr_i, mem_we_i, mem_re_i, mem_type
 	output reg lsu_we_o;
 	output reg lsu_re_o;
 
-	localparam mem_type_word = 2'b11;
-	localparam mem_type_half = 2'b10;
-	localparam mem_type_byte = 2'b01;
+	wire [1:0] mem_type_i;
+	wire mem_sign_i;
+
+	assign mem_type_i = mem_funct3[1:0];
+	assign mem_sign_i = !mem_funct3[2];
+	assign mem_we_i = mem_is_mem_i && mem_we_mem_i;
+	assign mem_re_i = mem_is_mem_i && !mem_we_mem_i;
+
+	localparam mem_type_word = 2'b10;
+	localparam mem_type_half = 2'b01;
+	localparam mem_type_byte = 2'b00;
 
 
 	//Circuito combinatorio

@@ -43,11 +43,10 @@ module mem(input wire clk_i,
   input wire [31:0] mem_pc4_i, 
   input wire [4:0] mem_rd_i,
   input wire mem_kill_i,
-  input wire mem_we_i, 
-  input wire mem_re_i,
+  input wire mem_we_mem_i, 
+  input wire mem_is_mem_i,
   input wire mem_trap_i,
-  input wire mem_type_i[1:0],
-  input wire mem_sign_i,
+  input wire [2:0] mem_funct3_i,
   // Salida pipeline
   output reg [31:0] mem_pc_o, 
   output reg [31:0] mem_pc4_o, 
@@ -82,12 +81,14 @@ module mem(input wire clk_i,
   end
 
   LSUcomb lsucomb(.clk_i(clk_i), .rst_i(rst_i),.mem_dat_i(mem_rsc2_i), .mem_addr_i(mem_alu_i), 
-  .mem_we_i(mem_we_i), .mem_re_i(mem_re_i), .mem_type_i(mem_type_i), .mem_sign_i(mem_sign_i), .mem_err_o(addrmiss_err), .mem_dat_o(mem_out_o), 
-  .lsu_dat_i(wbs_dat_i), .lsu_sel_o(wbs_sel_o), .lsu_addr_o(wbs_addr_o), .lsu_dat_o(wbs_dat_o), .lsu_we_o(mem_we), .lsu_re_o(mem_re));
+  .mem_we_mem_i(mem_we_i), .mem_is_mem_i(mem_is_mem_i), .mem_funct3(mem_funct3_i), 
+  .mem_err_o(addrmiss_err), .mem_dat_o(mem_out_o), .lsu_dat_i(wbs_dat_i), .lsu_sel_o(wbs_sel_o), 
+  .lsu_addr_o(wbs_addr_o), .lsu_dat_o(wbs_dat_o), .lsu_we_o(mem_we), .lsu_re_o(mem_re));
 
   WBU lsu(.clk_i(clk_i), .rst_i(rst_i), 
-  .wbm_we_i(mem_we), .wbm_re_i(mem_re), .wbm_kill_i(mem_kill_i), .wbm_ack_o(mem_ack), .wbm_err_o(bus_err),
-  .wbs_ack_i(wbs_ack_i), .wbs_err_i(wbs_err_i), .wbs_cyc_o(wbs_cyc_o), .wbs_stb_o(wbs_stb_o), .wbs_we_o(wbs_we_o));
+  .wbm_we_i(mem_we), .wbm_re_i(mem_re), .wbm_kill_i(mem_kill_i), .wbm_ack_o(mem_ack), 
+  .wbm_err_o(bus_err), .wbs_ack_i(wbs_ack_i), .wbs_err_i(wbs_err_i), 
+  .wbs_cyc_o(wbs_cyc_o), .wbs_stb_o(wbs_stb_o), .wbs_we_o(wbs_we_o));
 
 
 endmodule
