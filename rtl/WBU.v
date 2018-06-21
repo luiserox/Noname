@@ -47,6 +47,8 @@ wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 					wbs_cyc_o <= 0;
 					wbs_stb_o <= 0;
 					if(wbm_we_i ^ wbm_re_i) begin
+						wbs_cyc_o <= 1;
+						wbs_stb_o <= 1;
 						wbu_state <= wbu_state_tran;
 					end
 				end
@@ -54,8 +56,6 @@ wbs_ack_i, wbs_err_i, wbs_cyc_o, wbs_stb_o, wbs_we_o);
 					if(wbm_kill_i) begin
 						wbu_state <= wbu_state_idle;
 					end else
-						wbs_cyc_o <= 1;
-						wbs_stb_o <= 1;
 						if(wbs_ack_i || wbs_err_i) begin
 							wbs_cyc_o <= 0;
 							wbs_stb_o <= 0;
